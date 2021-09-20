@@ -3,6 +3,6 @@ This is an example application using a chromium instance (made headful using xvf
 
 ## Steps to install and run:
 -> ensure that you have xvfb and ffmpeg installed on your machines </br>
--> change livepeer streamkey in `./constants.js` 
+-> change livepeer streamkey in `./constants.js` </br>
 -> `npm i` </br>
 -> `npm run dev` </br>
