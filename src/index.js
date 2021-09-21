@@ -1,4 +1,5 @@
 import child_process from "child_process";
+import fs from "fs";
 import { getStream, launch } from "puppeteer-stream";
 import { ffmpegArgs, puppeteerArgs, testStreamKey, URL } from "./constants.js";
 import { createRequire } from "module";
@@ -24,24 +25,41 @@ async function main() {
 
     const page = await browser.newPage();
 
-    await page.evaluateOnNewDocument(async () => {
+    // await page.evaluateOnNewDocument(async () => {
       console.info(`Recording bot going to - ${URL}`);
 
       await page.goto(URL, {
         waitUntil: "networkidle2",
         timeout: 0,
       });
-    });
+    // });
 
-    const stream = await getStream(page, { audio: true, video: true });
+    const stream = await getStream(page, { 
+      audio: true, video: true, 
+      audioBitsPerSecond: 128 * 1000,
+      videoBitsPerSecond: 3 * 1024 * 1024 });
 
+    const file = fs.createWriteStream(`./out/output-${Date.now()}.webm`); 
     const ffmpeg = child_process.spawn("ffmpeg", ffmpegArgs(testStreamKey));
 
-    // stream.pipe(ffmpeg.stdin);
+    setTimeout(async () => {
+        await stream.destroy();
+        file?.close();
+        ffmpeg?.kill('SIGINT')
+        ffmpeg?.stdin.end()
+        console.log("finished");
+    }, 1000 * 60 * 10);
+
+    ffmpeg.on('close', (code) => {
+      console.log(`child process exited with code ${code}`);
+    });
+    ffmpeg.stderr.pipe(process.stdout);
+    ffmpeg.stdout.pipe(process.stdout); 
 
     stream.on("data", (data) => {
-      console.info(Date.now(), " - received data");
-      ffmpeg.stdin.write(data);
+      // console.info(Date.now(), " - received data");
+      file?.write(data);
+      ffmpeg?.stdin.write(data);
     });
   } catch (error) {
     console.error(error);
