@@ -32,7 +32,7 @@ const ffmpegArgs = (streamKey) => {
     "-c:a", "aac",
     "-ar", "44100",
     "-b:a", "128k",
-
+    "-max_muxing_queue_size", "8192",
     //force to overwrite
     // "-y",
 
@@ -46,7 +46,7 @@ const ffmpegArgs = (streamKey) => {
 
     "-f", "flv",
     `rtmp://rtmp.livepeer.com/live/${streamKey}`,
-    // `output-${Date.now()}.flv`
+    // `out/output-${Date.now()}.flv`
   ];
 };
 
