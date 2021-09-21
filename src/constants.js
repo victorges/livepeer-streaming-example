@@ -17,41 +17,36 @@ const puppeteerArgs = (display) => {
 
 const ffmpegArgs = (streamKey) => {
   return [
-    "-i",
-    "-",
+    "-i", "-",
 
+    
     // video codec config: low latency, adaptive bitrate
-    "-c:v",
-    "libx264",
-    "-preset",
-    "veryfast",
-    "-tune",
-    "zerolatency",
+    "-c:v", "libx264",
+    "-x264-params", "keyint=60:scenecut=0",
+    "-vsync", "1",
+    // "-max_interleave_delta", "0",
+    // "-preset", "veryfast",
+    // "-tune", "zerolatency",
 
     // audio codec config: sampling frequency (11025, 22050, 44100), bitrate 64 kbits
-    "-c:a",
-    "aac",
-    "-ar",
-    "44100",
-    "-b:a",
-    "64k",
+    "-c:a", "aac",
+    "-ar", "44100",
+    "-b:a", "128k",
 
     //force to overwrite
-    "-y",
+    // "-y",
 
     // used for audio sync
-    "-use_wallclock_as_timestamps",
-    "1",
-    "-async",
-    "1",
+    // "-use_wallclock_as_timestamps", "1",
+    // "-async", "1",
 
     //'-filter_complex', 'aresample=44100', // resample audio to 44100Hz, needed if input is not 44100
     //'-strict', 'experimental',
-    "-bufsize",
-    "1000",
-    "-f",
-    "flv",
+    // "-bufsize", "1000",
+
+    "-f", "flv",
     `rtmp://rtmp.livepeer.com/live/${streamKey}`,
+    // `output-${Date.now()}.flv`
   ];
 };
 
