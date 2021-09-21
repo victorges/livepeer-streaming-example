@@ -27,12 +27,14 @@ async function main() {
 
     // await page.evaluateOnNewDocument(async () => {
       console.info(`Recording bot going to - ${URL}`);
+    });
 
       await page.goto(URL, {
         waitUntil: "networkidle2",
         timeout: 0,
       });
     // });
+
 
     const stream = await getStream(page, { 
       audio: true, video: true, 
